@@ -1,0 +1,9 @@
+version: "3.3"
+services:
+  postgres_produto:
+    image: debezium/example-postgres
+    environment:
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: root
+    ports:
+      - "5432:5432"
