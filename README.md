@@ -13,3 +13,10 @@ http://localhost:8080/q/health
 http://localhost:8080/q/health/live
 http://localhost:8080/q/health/ready
 ```
+#### Fault tolerance api
+- Timeout: define um tempo de execução.
+- Fallback: provem uma alternativa ou diante a uma chamada ao serviço com falha
+- Retry: executa tentativas, diante uma estratégia
+- Bulkhead: isola  parte com falha, enquanto o restante do serviço continua funcionando.
+- Circuite breaker: define critérios de respostas a erro de forma rapida.
+- Asynchronous: invoca uma operação assincrona.
