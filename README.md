@@ -12,6 +12,7 @@ mvn clean package -Dquarkus.container-image.build=true -Dquarkus.kubernetes.depl
 http://localhost:8080/q/health
 http://localhost:8080/q/health/live
 http://localhost:8080/q/health/ready
+http://localhost:8080/q/metrics/application
 ```
 #### Fault tolerance api
 - Timeout: define um tempo de execução.
