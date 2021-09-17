@@ -13,3 +13,7 @@ data:
     quarkus.hibernate-orm.database.generation=none
     quarkus.flyway.clean-at-start=false
     quarkus.flyway.migrate-at-start=true
+    quarkus.jaeger.service-name=quarkus-service
+    quarkus.jaeger.sampler-type=const
+    quarkus.jaeger.sampler-param=1
+    quarkus.jaeger.endpoint=http://jaeger:14268/api/traces

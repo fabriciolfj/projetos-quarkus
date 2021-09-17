@@ -6,6 +6,7 @@ import com.github.fabriciolfj.domain.exceptions.CustomerException;
 import com.github.fabriciolfj.gateway.repository.CustomerRepository;
 import com.github.fabriciolfj.gateway.repository.converter.CustomerConverter;
 import com.github.fabriciolfj.gateway.repository.entities.CustomerEntity;
+import lombok.extern.slf4j.Slf4j;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
@@ -16,6 +17,7 @@ import java.util.stream.Collectors;
 import static java.util.Optional.ofNullable;
 
 @ApplicationScoped
+@Slf4j
 public class CustomerProvider implements CrudCustomer {
 
     @Inject
@@ -25,6 +27,8 @@ public class CustomerProvider implements CrudCustomer {
     CustomerConverter customerConverter;
 
     @Override
+    //@Asynchronous
+    //@Bulkhead(value = 5, waitingTaskQueue = 10)
     public void create(final Customer customer) {
         final CustomerEntity entity = customerConverter.toEntity(customer);
         customerRepository.create(entity);
