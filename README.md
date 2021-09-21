@@ -21,3 +21,8 @@ http://localhost:8080/q/metrics/application
 - Bulkhead: isola  parte com falha, enquanto o restante do serviço continua funcionando.
 - Circuite breaker: define critérios de respostas a erro de forma rapida.
 - Asynchronous: invoca uma operação assincrona.
+
+#### Gerar um arquivo properties de exemplo, com todas as propriedades baseadas nas dependências do projeto
+```
+mvn quarkus:generate-config
+``
