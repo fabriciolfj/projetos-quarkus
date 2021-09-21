@@ -25,4 +25,4 @@ http://localhost:8080/q/metrics/application
 #### Gerar um arquivo properties de exemplo, com todas as propriedades baseadas nas dependências do projeto
 ```
 mvn quarkus:generate-config
-``
+```
