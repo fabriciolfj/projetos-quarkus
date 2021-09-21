@@ -7,6 +7,8 @@ import com.github.fabriciolfj.controller.dto.response.CustomerResponse;
 import com.github.fabriciolfj.domain.Customer;
 import io.quarkus.security.identity.SecurityIdentity;
 import lombok.extern.slf4j.Slf4j;
+import org.eclipse.microprofile.config.Config;
+import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.eclipse.microprofile.faulttolerance.CircuitBreaker;
 import org.eclipse.microprofile.faulttolerance.Fallback;
 import org.eclipse.microprofile.faulttolerance.Retry;
@@ -33,6 +35,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Random;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Slf4j
 @Path("api/v1/customers")
@@ -55,6 +58,28 @@ public class CustomerController {
     @Claim(standard = Claims.preferred_username)
     Optional<JsonString> currentUsername;
 
+    @Inject
+    @ConfigProperty(name = "test.value")
+    String value;
+
+    @ConfigProperty(name = "students")
+    List<String> studentList;
+
+    @ConfigProperty(name = "pets")
+    String[] petsArray;
+
+
+    @Inject
+    Config config;
+
+    @GET
+    @Path("test")
+    public void test() {
+        studentList.stream().forEach(value -> log.info("Student: {}", value));
+        Stream.of(petsArray).forEach(value -> log.info("Pets: {}", value));
+        log.info("Property: {}", config.getValue("year", Integer.class));
+    }
+
     /*
     * CircuitBreaker: caso as ultimas 4 solicitacoes, 75% falharem, o circuit ficará semi aberto por 1000 milisegundos
     * */
@@ -69,6 +94,7 @@ public class CustomerController {
     @APIResponse(responseCode = "200", description = "Successfull response.")
     @RolesAllowed("user")
     public List<CustomerResponse> findAll()  {
+        log.info("Test property: {}", value);
         log.info("Connected with user {}", securityIdentity.getPrincipal().getName());
         log.info("Groups: {}", groups.get());
         log.info("Current username {}", currentUsername.get());
