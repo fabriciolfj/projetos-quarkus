@@ -3,6 +3,7 @@ package com.github.fabriciolfj.business;
 import com.github.fabriciolfj.domain.Customer;
 
 import java.util.List;
+import java.util.concurrent.CompletionStage;
 
 public interface CrudCustomer {
 
@@ -15,4 +16,8 @@ public interface CrudCustomer {
     void update(final Customer customer, final Long id);
 
     List<Customer> findAll();
+
+    CompletionStage<String> writeFile();
+
+    CompletionStage<String> readFile();
 }

@@ -6,15 +6,24 @@ import com.github.fabriciolfj.domain.exceptions.CustomerException;
 import com.github.fabriciolfj.gateway.repository.CustomerRepository;
 import com.github.fabriciolfj.gateway.repository.converter.CustomerConverter;
 import com.github.fabriciolfj.gateway.repository.entities.CustomerEntity;
+import io.vertx.core.Vertx;
+import io.vertx.core.buffer.Buffer;
 import lombok.extern.slf4j.Slf4j;
+import org.eclipse.microprofile.config.inject.ConfigProperty;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
+import javax.json.JsonArray;
+import javax.json.JsonArrayBuilder;
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionStage;
 import java.util.stream.Collectors;
 
 import static java.util.Optional.ofNullable;
+import static java.util.concurrent.TimeUnit.MILLISECONDS;
+import static java.util.concurrent.TimeUnit.NANOSECONDS;
 
 @ApplicationScoped
 @Slf4j
@@ -25,6 +34,12 @@ public class CustomerProvider implements CrudCustomer {
 
     @Inject
     CustomerConverter customerConverter;
+
+    @Inject
+    Vertx vertx;
+
+    @ConfigProperty(name = "file.path")
+    String path;
 
     @Override
     //@Asynchronous
@@ -65,6 +80,55 @@ public class CustomerProvider implements CrudCustomer {
         final List<CustomerEntity> entities = customerRepository.findAll();
         return entities.stream().map(customerConverter::toDomain)
                 .collect(Collectors.toList());
+    }
+
+   @Override
+    public CompletionStage<String> writeFile() {
+        final JsonArrayBuilder jsonArray = javax.json.Json.createArrayBuilder();
+
+        for (CustomerEntity customer: customerRepository.findAll()) {
+            jsonArray.add(javax.json.Json.createObjectBuilder().
+                    add("id", customer.id)
+                    .add("name", customer.name)
+                    .add("surname", customer.surname).build());
+        }
+
+        final JsonArray array = jsonArray.build();
+        final CompletableFuture<String> future = new CompletableFuture<>();
+
+        vertx.fileSystem().writeFile(path, Buffer.buffer(array.toString()), handler -> {
+            if (handler.succeeded()) {
+                future.complete("Written JSON file in " +path);
+            } else {
+                System.err.println("Error while writing in file: " + handler.cause().getMessage());
+            }
+        });
+
+        return future;
+    }
+
+    @Override
+    public CompletionStage<String> readFile() {
+        final CompletableFuture<String> future = new CompletableFuture<>();
+
+        long start = System.nanoTime();
+
+        // Delay reply by 100ms
+        vertx.setTimer(100, l -> {
+            // Compute elapsed time in milliseconds
+            long duration = MILLISECONDS.convert(System.nanoTime() - start, NANOSECONDS);
+
+            vertx.fileSystem().readFile(path, ar -> {
+                if (ar.succeeded()) {
+                    String response = ar.result().toString("UTF-8");
+                    future.complete(response);
+                } else {
+                    future.complete("Cannot read the file: " + ar.cause().getMessage());
+                }
+            });
+        });
+
+        return future;
     }
 
 }

@@ -6,6 +6,7 @@ import com.github.fabriciolfj.domain.Customer;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import java.util.List;
+import java.util.concurrent.CompletionStage;
 
 @ApplicationScoped
 public class CustomerCase {
@@ -31,5 +32,13 @@ public class CustomerCase {
 
     public void update(final Customer customer, final Long id) {
         crudCustomer.update(customer, id);
+    }
+
+    public CompletionStage<String> write() {
+        return crudCustomer.writeFile();
+    }
+
+    public CompletionStage<String> read() {
+        return crudCustomer.readFile();
     }
 }

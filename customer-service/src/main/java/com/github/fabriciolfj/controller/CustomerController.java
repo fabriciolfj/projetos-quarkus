@@ -34,6 +34,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.Random;
+import java.util.concurrent.CompletionStage;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -68,9 +69,20 @@ public class CustomerController {
     @ConfigProperty(name = "pets")
     String[] petsArray;
 
-
     @Inject
     Config config;
+
+    @GET
+    @Path("write")
+    public CompletionStage<String> write() {
+        return customerCase.write();
+    }
+
+    @GET
+    @Path("read")
+    public CompletionStage<String> readValue() {
+        return customerCase.read();
+    }
 
     @GET
     @Path("test")
@@ -92,7 +104,7 @@ public class CustomerController {
     @CircuitBreaker(failOn = {RuntimeException.class}, requestVolumeThreshold= 4, failureRatio= 0.75, successThreshold= 5, delay = 1000)
     @Operation(operationId = "all", description = "Getting all customers")
     @APIResponse(responseCode = "200", description = "Successfull response.")
-    @RolesAllowed("user")
+    //@RolesAllowed("admin")
     public List<CustomerResponse> findAll()  {
         log.info("Test property: {}", value);
         log.info("Connected with user {}", securityIdentity.getPrincipal().getName());
@@ -107,7 +119,7 @@ public class CustomerController {
     }
 
     @POST
-    @RolesAllowed("admin")
+    //@RolesAllowed("admin")
     public Response create(@Parameter(description = "The new customer", required = true) final CustomerRequest request) {
         customerCase.save(converterDTO.toDomain(request));
         return Response.status(201).build();
